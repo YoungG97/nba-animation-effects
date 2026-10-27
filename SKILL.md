@@ -1,12 +1,12 @@
 ---
-name: nba-player-video-maker
+name: nba-audio-trim-align
 description: >-
-  Automated NBA player documentary and sports broadcast video production suite (1080P 60fps). Generates professional broadcast video modules from player biographies, career milestones, and stats: 10s hero intro ('每天认识一位NBA球员'), 4s wordcloud contraction, 2.5s major chapter transitions, 12s two-stage aesthetic profile HUD, calibrated career era transitions (1.5s total time first, then honors 1.5s sequentially), 32s 20-card career marquee slideshow with subtle 1px contour shadow, 8s 4-chapter movie poster cards, procedural high-impact sound design, surgical audio breath gap & dead-air excision, 60fps hardware-accelerated Ken Burns flashback carousel, and full 12-track automated JianYing Pro project generation. Trigger on: 'NBA球员', '球员介绍', '认识一位NBA球员', 'nba video', 'nba player documentary', '球员纪录片', '球员生平视频', '球星生平', '球星介绍'.
+  Automated NBA player audio editing, surgical dead-air excision, acoustic breath gap tightening, timeline alignment, and sports documentary video production suite (1080P 60fps). Features: Whisper word-level timestamps + VAD energy excision (sub-clauses 0.05-0.08s, sentences 0.15-0.20s), 12-track JianYing Pro automated draft builder, 60fps hardware-accelerated Ken Burns flashback carousel, procedural sound effects, and broadcast-grade typography. Trigger on: 'nba-audio-trim-align', 'NBA球员音频剪辑', '音频对齐', '音画对齐', '剪气口', 'NBA球员', '球员介绍', '认识一位NBA球员', 'nba video', 'nba player documentary', '球员纪录片', '球员生平视频', '球星生平', '球星介绍'.
 ---
 
-# NBA Player Video Maker (NBA 球星全自动电影级纪录片工坊)
+# NBA Audio Trim & Align (NBA 球员音频精细剪辑与音画对齐工坊)
 
-This skill empowers Antigravity to transform any NBA player's textual biography, stats, awards, raw voiceover audio, and photos into a **broadcast-grade 1080P 60fps documentary video package** and a **ready-to-export 12-track JianYing Pro (剪映) project**, matching the visual and acoustic aesthetic of ESPN 30 for 30, NBA on TNT, and Netflix sports documentaries.
+This skill empowers Antigravity to transform any NBA player's textual biography, stats, awards, raw voiceover audio recordings, and photos into a **tightly calibrated, surgically trimmed voiceover timeline**, a **broadcast-grade 1080P 60fps documentary video package**, and a **ready-to-export 12-track JianYing Pro (剪映) project**, matching the visual and acoustic aesthetic of ESPN 30 for 30, NBA on TNT, and Netflix sports documentaries.
 
 ---
 

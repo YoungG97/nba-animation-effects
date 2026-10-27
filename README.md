@@ -1,4 +1,4 @@
-# 🏀 NBA Player Video Maker
+# 🎙️ NBA Audio Trim & Align (`nba-audio-trim-align`)
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![Resolution](https://img.shields.io/badge/Resolution-1080P%2060fps-FF6B6B?style=flat-square)](#)
@@ -7,9 +7,9 @@
 [![Antigravity](https://img.shields.io/badge/Antigravity-Skill%20Ready-6C5CE7?style=flat-square)](#)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
-An automated, broadcast-grade NBA player documentary and sports video production suite for **Antigravity** and Python.
+An automated, broadcast-grade NBA player audio editing, dead-air surgical trimming, and timeline alignment suite for **Antigravity** and Python.
 
-Turn raw player bios, statistics, milestones, voiceover audio recordings, and photos into a complete **1080P 60fps documentary video package** and a **production-ready 12-track JianYing Pro (剪映) draft project**—featuring ESPN/TNT-style broadcast typography, surgical breath-gap acoustic trimming, procedural sound effects, and automated timeline generation.
+Turn raw player bios, statistics, milestones, voiceover audio recordings, and photos into a **tightly calibrated voiceover timeline**, a complete **1080P 60fps documentary video package**, and a **production-ready 12-track JianYing Pro (剪映) draft project**—featuring Whisper + VAD surgical dead-air excision, tight breath-gap acoustic trimming, procedural sound effects, and automated timeline generation.
 
 ---
 
@@ -90,7 +90,7 @@ flowchart LR
 Clone the repository into your Antigravity skills directory or local project:
 
 ```bash
-git clone https://github.com/YoungG97/nba-player-video-maker.git ~/.gemini/config/skills/nba-player-video-maker
+git clone https://github.com/YoungG97/nba-audio-trim-align.git ~/.gemini/config/skills/nba-audio-trim-align
 ```
 
 Install requirements:

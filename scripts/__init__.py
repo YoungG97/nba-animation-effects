@@ -1,4 +1,4 @@
-"""NBA Player Video Maker package."""
+"""NBA Audio Trim & Align package."""
 
 from .audio_surgical_trimmer import slice_and_calibrate_audio, trim_interval_energy
 from .render_flashback_carousel import render_flashback_carousel
