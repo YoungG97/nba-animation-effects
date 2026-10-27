@@ -1,104 +1,138 @@
 ---
 name: nba-player-video-maker
 description: >-
-  Automated NBA player documentary and sports broadcast video production suite (1080P 60fps). Generates professional broadcast video modules from player biographies, career milestones, and stats: 10s hero intro ('每天认识一位NBA球员'), 4s wordcloud contraction, 2.5s major chapter transitions, 12s two-stage aesthetic profile HUD, calibrated career era transitions (1.5s total time first, then honors 1.5s sequentially), 32s 20-card career marquee slideshow with subtle 1px contour shadow, 8s 4-chapter movie poster cards, procedural high-impact sound design, and full master video assembly. Trigger on: 'NBA球员', '球员介绍', '认识一位NBA球员', 'nba video', 'nba player documentary', '球员纪录片', '球员生平视频', '球星生平', '球星介绍'.
+  Automated NBA player documentary and sports broadcast video production suite (1080P 60fps). Generates professional broadcast video modules from player biographies, career milestones, and stats: 10s hero intro ('每天认识一位NBA球员'), 4s wordcloud contraction, 2.5s major chapter transitions, 12s two-stage aesthetic profile HUD, calibrated career era transitions (1.5s total time first, then honors 1.5s sequentially), 32s 20-card career marquee slideshow with subtle 1px contour shadow, 8s 4-chapter movie poster cards, procedural high-impact sound design, surgical audio breath gap & dead-air excision, 60fps hardware-accelerated Ken Burns flashback carousel, and full 12-track automated JianYing Pro project generation. Trigger on: 'NBA球员', '球员介绍', '认识一位NBA球员', 'nba video', 'nba player documentary', '球员纪录片', '球员生平视频', '球星生平', '球星介绍'.
 ---
 
-# NBA Player Video Maker (NBA 球星视频全自动生产工坊)
+# NBA Player Video Maker (NBA 球星全自动电影级纪录片工坊)
 
-This skill empowers Antigravity to transform any NBA player's textual biography, stats, awards, and raw photos into a **broadcast-grade 1080P 60fps documentary video package** matching the visual aesthetic of ESPN, NBA on TNT, and Netflix sports documentaries.
+This skill empowers Antigravity to transform any NBA player's textual biography, stats, awards, raw voiceover audio, and photos into a **broadcast-grade 1080P 60fps documentary video package** and a **ready-to-export 12-track JianYing Pro (剪映) project**, matching the visual and acoustic aesthetic of ESPN 30 for 30, NBA on TNT, and Netflix sports documentaries.
 
 ---
 
-## 🎨 Visual Philosophy & Design Standards
+## 🎨 Core Design Standards
 
 1. **Broadcast Typography Standard (严禁字体粘连)**:
-   - **Primary Font**: `IBM Plex Sans SC Bold` (`~/Library/Fonts/IBMPlexSansSC-Bold.otf`).
+   - **Primary Font**: `IBM Plex Sans SC Bold` (`~/Library/Fonts/IBMPlexSansSC-Bold.otf`) or `Hiragino Sans GB W6`.
    - Open counters (字怀开阔), geometric sans-serif structure, perfectly legible even in multi-stroke Chinese characters (如“星、冠、期、守、阵、第、队”).
    - Heavy impact font (`AlibabaPuHuiTi-2-115-Black.otf`) is reserved ONLY for mega titles (100pt+).
 2. **The 1px Contour Shadow Policy (微距精修阴影)**:
    - **Zero Foreground Stroke**: Never add stroke expansion to the foreground text (`stroke_width = 0`).
    - **Subtle 1px Contour Shadow**: Apply a 1px outline stroke only on the shadow layer (`fill=(0, 0, 0, 220), offset=(1, 3)`). This creates a crisp 3D separation on bright/dark backgrounds without heavy black blobs or blur smudges.
-3. **Calibrated Era Timing Rules (严格生涯时期时序)**:
-   - **0.0s $\sim$ 1.5s (Exclusive Window)**: ONLY the era title and total time period (e.g., 《新秀及快速成长期 2022 - 2024》) are displayed alongside the dual-color team underline. NO honors are shown during this window!
-   - **1.5s+ (Sequential Honors)**: Honors slide in sequentially at **1.5-second intervals** ("上一个出现结束，后面一个才出现").
-4. **Procedural Sound Design (100% Free Local Synthesis)**:
-   - All punch thuds, whooshes, camera shutters, and bass drops are synthesized locally in Python via NumPy/WAV—zero third-party audio dependencies.
+3. **Surgical Breath Gap Calibration (字词级声学剪切与紧凑气口)**:
+   - **Sub-clauses (逗号短从句)**: Strictly **0.05s ～ 0.08s**.
+   - **Complete Sentences (句号/冒号)**: Strictly **0.15s ～ 0.20s**.
+   - **Internal Dead-Air Excision**: Cut out any mid-sentence awkward silence > 0.15s, stutters, and false starts using Whisper word-level timestamps and RMS energy voice-activity-detection (VAD).
+   - **Chapter Poster Window**: Strictly **1.000s** for the 4 keyword cards.
+   - **Flashback Carousel**: Strictly **19.800s** (11 milestone photos * 1.800s) or **32.000s** (20 cards * 1.600s).
+4. **Hardware-Accelerated 60fps Flashback Carousel**:
+   - macOS Apple VideoToolbox (`h264_videotoolbox`) hardware encoding.
+   - Ken Burns push-in zoom (1.000 to 1.035) + camera shutter flash brightness pop (t < 0.06s).
+   - Bottom-left corner gradient scrim mask + 2-stage typography animation (Date + Details staggered ease-out slide with `#F5C518` golden accent).
 
 ---
 
-## 🚦 Pipeline Architecture & Modules
-
-A complete production run generates both individual timeline clips and a seamless master video:
+## 🚦 Full Production 3-Stage Pipeline
 
 ```mermaid
 flowchart TD
-    M1["01: Opening Hero Intro (10.0s)"] --> M2["02: Core Wordcloud (4.0s)"]
-    M2 --> M3["03: Major Ch1: 基本信息 (2.5s)"]
-    M3 --> M4["04: Aesthetic Profile HUD (12.0s)"]
-    M4 --> M5["05: Major Ch2: 职业生涯 (2.5s)"]
-    M5 --> M6["06: Career Era Transitions (3.3s ~ 7.8s)"]
-    M6 --> M7["07: Career 20-Card Marquee (32.0s)"]
-    M7 --> M8["08: Keyword Poster Cards (8.0s)"]
-    M8 --> MASTER["00: Full Master Assembly (88.0s 1080P60)"]
+    A["Raw Assets: Voiceover M4A/WAV, Script & Photo Library"] --> B["Stage 1: Audio Surgical Trimmer<br/>• Whisper word-level timestamps<br/>• VAD dead-air excision<br/>• Tight breath pacing calibration"]
+    B --> C["Cleaned Voiceover WAV & Segments JSON"]
+    C --> D["Stage 2: 60fps Flashback Carousel<br/>• Chronological milestone photos<br/>• Ken Burns zoom & shutter flash<br/>• Apple VideoToolbox 60fps MP4"]
+    D --> E["Flashback Carousel Master MP4"]
+    E --> F["Stage 3: 12-Track JianYing Project Builder<br/>• Voiceover Audio<br/>• BGM ducking (vol 0.18, 3s fade)<br/>• SFX Whoosh / Click / Shutter<br/>• Word-synced Subtitles<br/>• 4 Animated Keyword Poster Titles<br/>• Stacked 4-Tier Honors Text<br/>• Main Video track (Clips, Posters, HUD, Outro)"]
+    F --> G["JianYing Pro Draft Registered<br/>Instant home-screen recognition"]
 ```
-
-### Module Breakdown
-
-| Track | Module Name | Duration | Description |
-| :---: | :--- | :---: | :--- |
-| **01** | `01_开头人物入场_每天认识一位NBA球员_10秒.mp4` | **10.0s** | Full-width 182pt title 《每天认识一位NBA球员》 + 2.5D hero push + 5.0s name entrance slam with bass drop. |
-| **02** | `02_核心词云过渡_4秒.mp4` | **4.0s** | 4–6 player tags converge inward to center in 0.5s + sustained forward push. |
-| **03** | `03_大章节过渡一_基本信息_2.5秒.mp4` | **2.5s** | 2.5D hero push + bottom dark gradient + 180pt 《基本信息》 double drop shadow slam. |
-| **04** | `04_详细基本信息杂志排版_12秒.mp4` | **12.0s** | Two-stage aesthetic HUD: Stage 1 (0..6s) Identity Bio; Stage 2 (6..12s) Physical Metrics & Positions with audio transition. |
-| **05** | `05_大章节过渡二_职业生涯经历及成就_2.5秒.mp4` | **2.5s** | 150pt 《职业生涯经历及成就》 with heavy impact sound design. |
-| **06** | `06_职业生涯时期过渡.mp4` | **3.3s / 7.8s** | 1.5s total time first + 1.5s sequential honors (Stack & Carousel modes). |
-| **07** | `07_职业生涯全套连续跑马灯_32秒.mp4` | **32.0s** | 20 historical milestone cards (1.6s each) with camera shutter audio and subtle 1px contour shadow. |
-| **08** | `08_关键词小章节全套合体连播_8秒.mp4` | **8.0s** | 4-chapter movie poster cards (Figure 2 aesthetic) with top badge pill, bold title, English subtitle, and bio. |
-| **00** | `01_【全片合体】完整全片_1080P60.mp4` | **$\sim$88.0s** | Broadcast-normalized concatenation of all clips into a single master video. |
 
 ---
 
-## 🛠️ Team Colors & Presets
+## 📂 12-Track JianYing Pro Timeline Architecture
 
-All 30 NBA teams have pre-configured color schemes in `scripts/team_colors.py`:
-- **Thunder (`OKC`)**: Thunder Blue `(0, 125, 195)` & Thunder Orange `(239, 59, 36)`
-- **Pistons (`DET`)**: Royal Blue `(29, 66, 138)` & Crimson Red `(198, 12, 48)`
-- **Lakers (`LAL`)**: Forum Purple `(85, 37, 130)` & California Gold `(253, 185, 39)`
-- **Warriors (`GSW`)**: Royal Blue `(29, 66, 138)` & Golden Yellow `(255, 199, 44)`
-- **Celtics (`BOS`)**: Celtic Green `(0, 122, 51)` & Gold `(235, 186, 56)`
+| Track # | Track Type | Track Name | Elements & Timing Behavior |
+| :---: | :---: | :--- | :--- |
+| **00** | Audio | `Voiceover_Audio` | Cleaned surgical voiceover audio (tight breath gaps, peak -2.0 dB). |
+| **01** | Audio | `BGM_Music` | Dynamic sports BGM (`动感.mp3`), auto-ducked to volume `0.18`, 3s fade-out at end. |
+| **02** | Audio | `SFX_Whoosh` | 4 high-impact whoosh/transition hits aligned to the start of each keyword poster card. |
+| **03** | Audio | `SFX_Staircase_Click` | Mechanical feedback click sound effects triggering on each honors tier reveal. |
+| **04** | Audio | `SFX_Flashback_Shutter` | Camera shutter sound effects triggering on every milestone photo in the flashback carousel. |
+| **05** | Video | `Main_Video` | Sequential visual clips: Intro video -> Poster 1 Still -> Keyword 1 Video -> Poster 2 Still -> Keyword 2 Video -> Poster 3 Still -> Keyword 3 Video -> Poster 4 Still -> Keyword 4 Video -> Basic Info Profile -> Honors Backgrounds -> Flashback Carousel 60fps MP4 -> Outro Stills. |
+| **06** | Text | `Subtitles` | Word-accurate synchronized subtitles generated from acoustic segment timestamps. |
+| **07** | Text | `Keyword_Poster_Title` | 4 chapter poster title cards (size 12.0, bold, black border, upward slide animation). |
+| **08** | Text | `Honor_Tier_1` | Tier 1 Honors Text (`1 次 NCAA 全国锦标赛总冠军 (2026)`, upward slide, y=0.22). |
+| **09** | Text | `Honor_Tier_2` | Tier 2 Honors Text (`1 次 大十联盟 (Big Ten) 年度最佳球员 (2026)`, upward slide, y=0.08). |
+| **10** | Text | `Honor_Tier_3` | Tier 3 Honors Text (`2 次 AAC 年度最佳防守球员 & 全美最佳防守阵容`, upward slide, y=-0.06). |
+| **11** | Text | `Honor_Tier_4` | Tier 4 Honors Text (`1 次 AAC 锦标赛 MVP & 2次 NJCAA 全美一阵`, upward slide, y=-0.20). |
 
 ---
 
-## 💻 CLI & Usage
+## 💻 Python API Usage
 
-### 1. Run via Master Pipeline
-```bash
-python3 -m scripts.pipeline --config examples/jalen_williams.json
-```
-
-### 2. Standalone Era Transition
+### 1. Audio Surgical Trimming & Breath Gap Calibration
 ```python
-from scripts.render_era_transitions import render_career_era
+from scripts.audio_surgical_trimmer import slice_and_calibrate_audio
 
-render_career_era(
-    photo_path="assets/champion.jpg",
-    title="迈入全明星与夺冠时期",
-    years="2024 - 至今",
-    honors=[
-        ("NBA 总冠军", "X1"),
-        ("NBA 全明星阵容", "X1"),
-        ("NBA 最佳阵容第三队", "X1"),
-        ("NBA 最佳防守阵容第二队", "X1"),
-    ],
-    out_mp4="output/era_02.mp4",
-    team_key="OKC",
-    mode="stack",
+speech_items = [
+    ([(0.73, 2.50), (2.70, 3.75)], "北京时间2026年10月27日，勇士大胜掘金，", 0.06),
+    ([(7.20, 10.26)], "一位年仅24岁的新秀挺身而出接管了比赛：", 0.08),
+    ([(11.49, 14.66)], "他仅出战31分钟便狂砍生涯新高的31分，", 0.06),
+    # ...
+]
+
+total_dur, segments = slice_and_calibrate_audio(
+    src_wav="raw_voiceover.wav",
+    speech_items=speech_items,
+    out_wav="cleaned_voiceover.wav",
+    out_json="audio_segments.json",
+    auto_energy_trim=True,
+    fade_ms=4.0
 )
 ```
 
-### 3. Output Packaging Structure
-The pipeline automatically organizes files into direct-drop timeline folders:
-- `00_【参考母片】全片无缝合体完整视频/`
-- `04_职业生涯详细卡片/`
-- `10_【直接拖入剪辑器】按时间线顺序单轨片段/` (01 to 09 sequential clips ready for Premiere, FCPX, or 剪映)
+### 2. 60fps Flashback Carousel Rendering
+```python
+from scripts.render_flashback_carousel import render_flashback_carousel
+
+items = [
+    ("path/to/01_college.jpg", "2023年11月10日，", "社区大学三年蛰伏蜕变初登NCAA，\n开启一级联盟逆袭征程"),
+    ("path/to/02_mvp.jpg", "2024年3月17日，", "率队夺得AAC联盟冠军，\n全票荣获锦标赛MVP高举奖杯"),
+    # ...
+]
+
+render_flashback_carousel(
+    items=items,
+    output_mp4="flashback_carousel_1080p.mp4",
+    fps=60,
+    dur_per_item=1.800
+)
+```
+
+### 3. Full 12-Track JianYing Pro Draft Generation
+```python
+from scripts.jianying_project_builder import build_nba_jianying_project
+
+draft_path = build_nba_jianying_project(
+    project_name="雅克塞尔·伦德博格_人物志",
+    voice_audio_path="cleaned_voiceover.wav",
+    segments_path="audio_segments.json",
+    bgm_music_path="music/dynamic_bgm.mp3",
+    sfx_paths={
+        "whoosh": "sfx/sfx_whoosh.wav",
+        "click": "sfx/sfx_click.wav",
+        "shutter": "sfx/sfx_shutter.wav"
+    },
+    poster_titles=posters,
+    honors_tiers=honors,
+    timeline_materials=timeline_materials,
+    cover_image_path="cover.jpg"
+)
+```
+
+---
+
+## 🛠️ Supported NBA Teams & Color Presets
+All 30 NBA teams are pre-configured in `scripts/team_colors.py`:
+- `GSW`: Royal Blue `(29, 66, 138)` & Golden Yellow `(255, 199, 44)`
+- `OKC`: Thunder Blue `(0, 125, 195)` & Sunset Orange `(239, 59, 36)`
+- `DET`: Royal Blue `(29, 66, 138)` & Crimson Red `(198, 12, 48)`
+- `LAL`: Forum Purple `(85, 37, 130)` & California Gold `(253, 185, 39)`
+- `BOS`: Celtic Green `(0, 122, 51)` & Gold `(235, 186, 56)`

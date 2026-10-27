@@ -2,30 +2,53 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![Resolution](https://img.shields.io/badge/Resolution-1080P%2060fps-FF6B6B?style=flat-square)](#)
-[![Audio](https://img.shields.io/badge/Audio-Procedural%20SFX-4ECDC4?style=flat-square)](#)
+[![Acoustics](https://img.shields.io/badge/Acoustics-Surgical%20VAD%20Trimming-4ECDC4?style=flat-square)](#)
+[![JianYing Pro](https://img.shields.io/badge/NLE-12--Track%20JianYing%20Pro-E84393?style=flat-square)](#)
 [![Antigravity](https://img.shields.io/badge/Antigravity-Skill%20Ready-6C5CE7?style=flat-square)](#)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
-An automated, broadcast-grade NBA player documentary and sports video production suite for **Antigravity** and Python. 
+An automated, broadcast-grade NBA player documentary and sports video production suite for **Antigravity** and Python.
 
-Turn raw player bios, statistics, milestones, and photos into a complete **1080P 60fps** documentary video package—featuring ESPN/TNT-style broadcast graphics, procedural sound effects, and automated timeline delivery folders ready for **Premiere Pro**, **Final Cut Pro**, and **剪映 (CapCut)**.
+Turn raw player bios, statistics, milestones, voiceover audio recordings, and photos into a complete **1080P 60fps documentary video package** and a **production-ready 12-track JianYing Pro (剪映) draft project**—featuring ESPN/TNT-style broadcast typography, surgical breath-gap acoustic trimming, procedural sound effects, and automated timeline generation.
 
 ---
 
 ## ✨ Key Highlights
 
-- **📺 Broadcast Typography Standard**: Powered by `IBM Plex Sans SC Bold` with open counters and geometric sans-serif balance. Zero stroke smudging on complex Chinese characters (如“星、冠、期、守、阵、第、队”).
-- **🎯 The 1px Contour Shadow Policy**: Foreground text has clean fill (`stroke_width=0`), while the shadow layer has a subtle 1px outline stroke with a 3px vertical offset. Produces crisp, tactile 3D relief against light, dark, and textured sports backgrounds without bloated black blobs.
-- **⏱️ Calibrated Career Era Timings**:
-  - `0.0s ~ 1.5s`: Exclusive window for Era Title & Total Years (e.g. 《新秀及快速成长期 2022 - 2024》) with dual-color team underline bar.
-  - `1.5s+`: Sequential honors slide in at exact **1.5s intervals** ("上一个出现结束，后面一个才出现"), available in stacked list mode or single-slot carousel mode.
-- **🔊 100% Free Local Sound Synthesis**: Procedural whooshes, sub-bass slams, camera shutters, and mirror-slaps generated dynamically in Python via NumPy/WAV—no paid sound libraries or external media needed.
-- **🎨 30 NBA Teams Color Engine**: Pre-configured official primary, secondary, and accent palettes for all 30 NBA franchises (OKC Thunder, Detroit Pistons, LA Lakers, Golden State Warriors, Boston Celtics, etc.).
-- **📂 Direct-Drop NLE Timeline Packaging**: Automatically organizes rendered clips into chronological single-track folders (`10_【直接拖入剪辑器】按时间线顺序单轨片段/`) for drag-and-drop editing.
+- **🎙️ Surgical Breath-Gap & Dead-Air Acoustic Calibration**:
+  - Automatically excises awkward mid-sentence silences (>0.15s), stutters, and false starts using Whisper word-level timestamps and RMS energy voice-activity-detection (VAD).
+  - Enforces tight broadcast cadence: **0.05s ～ 0.08s** for sub-clauses, **0.15s ～ 0.20s** between sentences, and strictly calibrated windows for chapter transitions.
+- **🎬 12-Track JianYing Pro (剪映) Project Builder**:
+  - Automatically compiles a native `draft_info.json` project with 12 organized tracks (Voiceover, BGM with auto-ducking to 0.18 and fade-out, SFX Whoosh/Click/Shutter, word-synced Subtitles, animated Keyword Posters, stacked 4-tier Honors, and sequential Main Video clips).
+  - Instantly recognized on the JianYing Pro home screen with a custom high-res project cover.
+- **⚡ Hardware-Accelerated 60fps Flashback Carousel**:
+  - Native macOS Apple VideoToolbox (`h264_videotoolbox`) hardware encoding.
+  - Ken Burns cinematic push-in zoom (1.000 to 1.035) + camera shutter flash brightness pop (t < 0.06s).
+  - Bottom-left corner gradient scrim mask + 2-stage typography animation (Date + Details staggered ease-out slide with `#F5C518` golden accent).
+- **📺 Broadcast Typography Standard**:
+  - Powered by `IBM Plex Sans SC Bold` with open counters (字怀开阔) and geometric sans-serif balance. Zero stroke smudging on complex Chinese characters (如“星、冠、期、守、阵、第、队”).
+- **🎯 The 1px Contour Shadow Policy**:
+  - Foreground text has clean fill (`stroke_width=0`), while the shadow layer has a subtle 1px outline stroke with a 3px vertical offset. Produces crisp, tactile 3D relief against light, dark, and textured sports backgrounds without bloated black blobs.
+- **🎨 30 NBA Teams Color Engine**:
+  - Pre-configured official primary, secondary, and accent palettes for all 30 NBA franchises (OKC Thunder, Golden State Warriors, Detroit Pistons, LA Lakers, Boston Celtics, etc.).
 
 ---
 
-## 🚦 Pipeline Overview
+## 🚦 Production Pipelines
+
+### Mode 1: 12-Track Full Documentary Assembly (JianYing Pro)
+
+```mermaid
+flowchart TD
+    A["Raw Assets: Voiceover M4A/WAV, Script & Photo Library"] --> B["Stage 1: Audio Surgical Trimmer<br/>• Whisper word-level timestamps<br/>• VAD dead-air excision<br/>• Tight breath pacing calibration"]
+    B --> C["Cleaned Voiceover WAV & Segments JSON"]
+    C --> D["Stage 2: 60fps Flashback Carousel<br/>• Chronological milestone photos<br/>• Ken Burns zoom & shutter flash<br/>• Apple VideoToolbox 60fps MP4"]
+    D --> E["Flashback Carousel Master MP4"]
+    E --> F["Stage 3: 12-Track JianYing Project Builder<br/>• Voiceover Audio (tight breath gaps)<br/>• BGM ducking (vol 0.18, 3s fade)<br/>• SFX Whoosh / Click / Shutter<br/>• Word-synced Subtitles<br/>• 4 Animated Keyword Poster Titles<br/>• Stacked 4-Tier Honors Text<br/>• Main Video track (Clips, Posters, HUD, Outro)"]
+    F --> G["JianYing Pro Draft Registered<br/>Instant home-screen recognition"]
+```
+
+### Mode 2: Standalone 9-Module NLE Video Package Generator
 
 ```mermaid
 flowchart LR
@@ -39,15 +62,24 @@ flowchart LR
     Posters --> Master["00: Master Video (88s)"]
 ```
 
-1. **01 Opening Hero Intro (10.0s)**: Full-width 182pt title 《每天认识一位NBA球员》 + 2.5D hero push + 5.0s name slam.
-2. **02 Core Wordcloud (4.0s)**: 4–6 player nicknames smoothly converge inward in 0.5s + sustained forward push.
-3. **03 Major Chapter 1: 基本信息 (2.5s)**: 2.5D hero push + bottom dark contrast gradient + 180pt double drop shadow title slam.
-4. **04 Aesthetic Profile HUD (12.0s)**: Two-stage magazine/HUD layout (0..6s identity dossier, 6..12s physical metrics and court positions with audio transition).
-5. **05 Major Chapter 2: 职业生涯经历及成就 (2.5s)**: High-impact chapter transition.
-6. **06 Career Era Transitions (3.3s ~ 7.8s)**: 1.5s total time first + 1.5s sequential honors.
-7. **07 Career 20-Card Marquee (32.0s)**: 20 milestone cards with 1px contour shadow, subtle zoom, and camera shutter audio.
-8. **08 Keyword Chapter Posters (8.0s)**: 4-chapter movie poster cards (Figure 2 editorial aesthetic).
-9. **00 Master Video Assembly (88.0s)**: Seamless concat with normalized audio/video.
+---
+
+## 📂 12-Track JianYing Pro Timeline Architecture
+
+| Track # | Track Type | Track Name | Elements & Timing Behavior |
+| :---: | :---: | :--- | :--- |
+| **00** | Audio | `Voiceover_Audio` | Cleaned surgical voiceover audio (tight breath gaps, peak -2.0 dB). |
+| **01** | Audio | `BGM_Music` | Dynamic sports BGM (`动感.mp3`), auto-ducked to volume `0.18`, 3s fade-out at end. |
+| **02** | Audio | `SFX_Whoosh` | 4 high-impact whoosh/transition hits aligned to the start of each keyword poster card. |
+| **03** | Audio | `SFX_Staircase_Click` | Mechanical feedback click sound effects triggering on each honors tier reveal. |
+| **04** | Audio | `SFX_Flashback_Shutter` | Camera shutter sound effects triggering on every milestone photo in the flashback carousel. |
+| **05** | Video | `Main_Video` | Sequential visual clips: Intro video -> Poster 1 Still -> Keyword 1 Video -> Poster 2 Still -> Keyword 2 Video -> Poster 3 Still -> Keyword 3 Video -> Poster 4 Still -> Keyword 4 Video -> Basic Info Profile -> Honors Backgrounds -> Flashback Carousel 60fps MP4 -> Outro Stills. |
+| **06** | Text | `Subtitles` | Word-accurate synchronized subtitles generated from acoustic segment timestamps. |
+| **07** | Text | `Keyword_Poster_Title` | 4 chapter poster title cards (size 12.0, bold, black border, upward slide animation). |
+| **08** | Text | `Honor_Tier_1` | Tier 1 Honors Text (`1 次 NCAA 全国锦标赛总冠军 (2026)`, upward slide, y=0.22). |
+| **09** | Text | `Honor_Tier_2` | Tier 2 Honors Text (`1 次 大十联盟 (Big Ten) 年度最佳球员 (2026)`, upward slide, y=0.08). |
+| **10** | Text | `Honor_Tier_3` | Tier 3 Honors Text (`2 次 AAC 年度最佳防守球员 & 全美最佳防守阵容`, upward slide, y=-0.06). |
+| **11** | Text | `Honor_Tier_4` | Tier 4 Honors Text (`1 次 AAC 锦标赛 MVP & 2次 NJCAA 全美一阵`, upward slide, y=-0.20). |
 
 ---
 
@@ -67,23 +99,99 @@ Install requirements:
 pip install opencv-python pillow numpy
 ```
 
-Ensure `ffmpeg` is available on your system (`brew install ffmpeg`).
-
-### Run via Master Pipeline
+Ensure `ffmpeg` is available on your system:
 
 ```bash
-python3 -m scripts.pipeline --config examples/jalen_williams.json
-```
-
-Or run individual module scripts directly:
-
-```bash
-python3 -m scripts.render_era_transitions
+brew install ffmpeg
 ```
 
 ---
 
-## 📋 JSON Configuration Schema
+## 💻 Python API & Examples
+
+### 1. Full Production Workflow (Yaxel Lendeborg Case Study)
+
+Run the complete 3-stage documentary production pipeline:
+
+```bash
+python3 examples/yaxel_lendeborg_full_production.py
+```
+
+### 2. Audio Surgical Trimming & Breath Gap Calibration
+
+```python
+from scripts.audio_surgical_trimmer import slice_and_calibrate_audio
+
+speech_items = [
+    ([(0.73, 2.50), (2.70, 3.75)], "北京时间2026年10月27日，勇士大胜掘金，", 0.06),
+    ([(7.20, 10.26)], "一位年仅24岁的新秀挺身而出接管了比赛：", 0.08),
+    ([(11.49, 14.66)], "他仅出战31分钟便狂砍生涯新高的31分，", 0.06),
+    # ...
+]
+
+total_dur, segments = slice_and_calibrate_audio(
+    src_wav="raw_voiceover.wav",
+    speech_items=speech_items,
+    out_wav="cleaned_voiceover.wav",
+    out_json="audio_segments.json",
+    auto_energy_trim=True,
+    fade_ms=4.0
+)
+```
+
+### 3. Hardware-Accelerated 60fps Flashback Carousel
+
+```python
+from scripts.render_flashback_carousel import render_flashback_carousel
+
+items = [
+    ("path/to/01_college.jpg", "2023年11月10日，", "社区大学三年蛰伏蜕变初登NCAA，\n开启一级联盟逆袭征程"),
+    ("path/to/02_mvp.jpg", "2024年3月17日，", "率队夺得AAC联盟冠军，\n全票荣获锦标赛MVP高举奖杯"),
+    # ...
+]
+
+render_flashback_carousel(
+    items=items,
+    output_mp4="flashback_carousel_60fps.mp4",
+    item_duration=1.8,
+    fps=60,
+    width=1920,
+    height=1080
+)
+```
+
+### 4. 12-Track Automated JianYing Pro Builder
+
+```python
+from scripts.jianying_project_builder import build_nba_jianying_project
+
+build_nba_jianying_project(
+    project_name="雅克塞尔·伦德博格_人物志",
+    voiceover_path="cleaned_voiceover.wav",
+    bgm_path="动感.mp3",
+    sfx_paths={
+        "whoosh": "whoosh.wav",
+        "click": "click.wav",
+        "shutter": "shutter.wav"
+    },
+    audio_segments=segments,
+    keyword_posters=[
+        {"title": "11场高中篮球", "start": 30.65, "duration": 1.0, "bg_image": "kw1.jpg"},
+        # ...
+    ],
+    honors=[
+        {"tier": 1, "text": "1 次 NCAA 全国锦标赛总冠军 (2026)", "start": 160.2, "duration": 8.0},
+        # ...
+    ],
+    flashback_carousel_mp4="flashback_carousel_60fps.mp4",
+    flashback_start=181.5,
+    flashback_duration=19.8
+)
+```
+
+---
+
+## 📋 JSON Configuration Schema (Standalone Pipeline)
 
 ```json
 {
