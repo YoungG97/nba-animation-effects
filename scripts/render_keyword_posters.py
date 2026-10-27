@@ -1,5 +1,5 @@
 """Keyword Chapter Posters Renderer (Figure 2 Editorial Poster Aesthetic).
-Generates movie/sports poster cards with chapter badge pill, centered bold title, and cinematic photo grading.
+Generates movie/sports poster cards with chapter badge pill and bold title in the lower third.
 Matches benchmark media_1793033375396_edc63561.png (MotorCade).
 """
 
@@ -31,14 +31,14 @@ def apply_cinematic_grading(img: Image.Image, target_w: int = 1920, target_h: in
         img = img.crop((0, top, src_w, top + new_h))
 
     img = img.resize((target_w, target_h), Image.Resampling.LANCZOS)
-    img = ImageEnhance.Contrast(img).enhance(1.10)
+    img = ImageEnhance.Contrast(img).enhance(1.08)
     img = ImageEnhance.Sharpness(img).enhance(1.15)
 
     overlay = Image.new("RGBA", (target_w, target_h), (0, 0, 0, 0))
     px = overlay.load()
     for y in range(target_h):
         ny = y / target_h
-        grad_alpha = int(210 * ((ny - 0.38) / 0.62) ** 1.3) if ny > 0.38 else 0
+        grad_alpha = int(220 * ((ny - 0.38) / 0.62) ** 1.35) if ny > 0.38 else 0
         top_alpha = int(95 * ((1.0 - ny / 0.22) ** 2)) if ny < 0.22 else 0
         for x in range(target_w):
             nx = x / target_w
@@ -51,7 +51,7 @@ def apply_cinematic_grading(img: Image.Image, target_w: int = 1920, target_h: in
 
     return Image.alpha_composite(img.convert("RGBA"), overlay)
 
-def draw_chapter_badge(chapter_idx: int, player_label: str, team_key: str = "GSW", top_y: int = 420, center_x: int = 960) -> Image.Image:
+def draw_chapter_badge(chapter_idx: int, player_label: str, team_key: str = "GSW", top_y: int = 660, center_x: int = 940) -> Image.Image:
     lay = Image.new("RGBA", (1920, 1080), (0, 0, 0, 0))
     draw = ImageDraw.Draw(lay)
     font_bold = get_font_path(prefer_heavy=False)
@@ -84,7 +84,10 @@ def draw_chapter_badge(chapter_idx: int, player_label: str, team_key: str = "GSW
         draw.text((cx, top_y), c, font=sub_font, fill=(255, 255, 255, 255))
         cx += sub_font.getlength(c) + 4
 
-    cx = start_x + (w_left + pill_pad_x * 2) + gap
+    cx = pill_rect[2] + gap // 2
+    draw.line([(cx, top_y + 5), (cx, top_y + 24)], fill=(255, 255, 255, 120), width=2)
+
+    cx = pill_rect[2] + gap
     for c in right_label:
         draw.text((cx + 1, top_y + 1), c, font=sub_font, fill=(0, 0, 0, 160))
         draw.text((cx, top_y), c, font=sub_font, fill=(215, 225, 235, 230))
@@ -92,16 +95,13 @@ def draw_chapter_badge(chapter_idx: int, player_label: str, team_key: str = "GSW
 
     return lay
 
-def render_poster_title_sprite(title: str, font_size: int = 140) -> Image.Image:
+def render_text_sprite(text: str, font_size: int, tracking: int = -5, stroke_width: int = 2) -> Image.Image:
     font_heavy = get_font_path(prefer_heavy=True)
     font = ImageFont.truetype(font_heavy, font_size)
-    tracking = -5
-    stroke_width = 2
-
-    char_advances = [font.getlength(ch) for ch in title]
-    total_w = int(sum(char_advances) + tracking * max(0, len(title) - 1))
-    pad_x = 60
-    pad_y = 50
+    advs = [font.getlength(ch) for ch in text]
+    total_w = int(sum(advs) + tracking * max(0, len(text) - 1))
+    pad_x = 80
+    pad_y = 60
     sw = total_w + pad_x * 2
     sh = font_size + pad_y * 2
 
@@ -109,17 +109,17 @@ def render_poster_title_sprite(title: str, font_size: int = 140) -> Image.Image:
     shadow_tight = Image.new("RGBA", (sw, sh), (0, 0, 0, 0))
     fg_layer = Image.new("RGBA", (sw, sh), (0, 0, 0, 0))
 
-    draw_sw = ImageDraw.Draw(shadow_wide)
-    draw_st = ImageDraw.Draw(shadow_tight)
-    draw_fg = ImageDraw.Draw(fg_layer)
+    d_sw = ImageDraw.Draw(shadow_wide)
+    d_st = ImageDraw.Draw(shadow_tight)
+    d_fg = ImageDraw.Draw(fg_layer)
 
     cur_x = pad_x
-    y = pad_y - int(font_size * 0.10)
-    for idx, ch in enumerate(title):
-        draw_sw.text((cur_x, y + 8), ch, font=font, fill=(0, 0, 0, 240), stroke_width=stroke_width + 6, stroke_fill=(0, 0, 0, 240))
-        draw_st.text((cur_x + 4, y + 7), ch, font=font, fill=(0, 0, 0, 255), stroke_width=stroke_width + 2, stroke_fill=(0, 0, 0, 255))
-        draw_fg.text((cur_x, y), ch, font=font, fill=(255, 255, 255, 255), stroke_width=stroke_width, stroke_fill=(255, 255, 255, 255))
-        cur_x += char_advances[idx] + tracking
+    y = pad_y - int(font_size * 0.12)
+    for idx, ch in enumerate(text):
+        d_sw.text((cur_x, y + 8), ch, font=font, fill=(0, 0, 0, 240), stroke_width=stroke_width + 6, stroke_fill=(0, 0, 0, 240))
+        d_st.text((cur_x + 4, y + 7), ch, font=font, fill=(0, 0, 0, 255), stroke_width=stroke_width + 2, stroke_fill=(0, 0, 0, 255))
+        d_fg.text((cur_x, y), ch, font=font, fill=(255, 255, 255, 255), stroke_width=stroke_width, stroke_fill=(255, 255, 255, 255))
+        cur_x += advs[idx] + tracking
 
     shadow_wide = shadow_wide.filter(ImageFilter.GaussianBlur(radius=18))
     shadow_tight = shadow_tight.filter(ImageFilter.GaussianBlur(radius=3.5))
@@ -146,13 +146,37 @@ def render_single_keyword_card(
     TOTAL_FRAMES = int(round(FPS * duration))
 
     base_graded = apply_cinematic_grading(Image.open(photo_path), W, H)
-    badge_layer = draw_chapter_badge(chapter_idx=chapter_idx, player_label=player_label, team_key=team_key, top_y=420, center_x=W // 2)
-    title_sprite = render_poster_title_sprite(title_cn, font_size=140)
+    center_x = int(W * 0.49)
+
+    # Determine single vs two-line
+    is_two_line = len(title_cn) > 6
+    if not is_two_line:
+        font_size = 145
+        text_y = int(H * 0.675) + 76
+        badge_y = int(H * 0.675) - 34
+        badge_layer = draw_chapter_badge(chapter_idx=chapter_idx, player_label=player_label, team_key=team_key, top_y=badge_y, center_x=center_x)
+        title_sprite = render_text_sprite(title_cn, font_size=font_size)
+    else:
+        # Two line split at midpoint or 4/3
+        mid = 4 if len(title_cn) == 7 else len(title_cn) // 2
+        l1 = title_cn[:mid]
+        l2 = title_cn[mid:]
+        font_size = 120
+        y1 = int(H * 0.635) + 61
+        y2 = y1 + 125
+        badge_y = int(H * 0.635) - 30
+        badge_layer = draw_chapter_badge(chapter_idx=chapter_idx, player_label=player_label, team_key=team_key, top_y=badge_y, center_x=center_x)
+        sp1 = render_text_sprite(l1, font_size=font_size)
+        sp2 = render_text_sprite(l2, font_size=font_size)
 
     if out_jpg:
         comp = Image.alpha_composite(base_graded, badge_layer)
         comp_np = np.asarray(comp.convert("RGB"), dtype=np.float32)
-        comp_np = alpha_composite_sprite(comp_np, title_sprite, center_x=W // 2, center_y=540, opacity=1.0)
+        if not is_two_line:
+            comp_np = alpha_composite_sprite(comp_np, title_sprite, center_x=center_x, center_y=text_y, opacity=1.0)
+        else:
+            comp_np = alpha_composite_sprite(comp_np, sp1, center_x=center_x, center_y=y1, opacity=1.0)
+            comp_np = alpha_composite_sprite(comp_np, sp2, center_x=center_x, center_y=y2, opacity=1.0)
         Image.fromarray(np.clip(comp_np, 0, 255).astype(np.uint8)).save(out_jpg, quality=95)
 
     tmp_wav = out_mp4.replace(".mp4", "_sfx.wav")
@@ -173,17 +197,24 @@ def render_single_keyword_card(
 
     for f_idx in range(TOTAL_FRAMES):
         t = f_idx / FPS
-        push = 1.00 + 0.03 * (t / duration)
+        push = 1.00 + 0.025 * (t / duration)
         M = np.float32([
             [push, 0, (W * 0.5) * (1.0 - push)],
             [0, push, (H * 0.5) * (1.0 - push)],
         ])
         frame = cv2.warpAffine(base_with_badge_np, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT_101)
 
-        u = min(1.0, t / 0.30)
-        p = ease_out_back(u, overshoot=1.20)
-        cur_y = int(540 * (0.94 + 0.06 * p))
-        frame = alpha_composite_sprite(frame, title_sprite, center_x=W // 2, center_y=cur_y, opacity=min(1.0, u * 2))
+        u = min(1.0, t / 0.28)
+        p = ease_out_back(u, overshoot=1.18)
+
+        if not is_two_line:
+            cur_y = int(text_y * (0.95 + 0.05 * p))
+            frame = alpha_composite_sprite(frame, title_sprite, center_x=center_x, center_y=cur_y, opacity=min(1.0, u * 2))
+        else:
+            cur_y1 = int(y1 * (0.95 + 0.05 * p))
+            cur_y2 = int(y2 * (0.95 + 0.05 * p))
+            frame = alpha_composite_sprite(frame, sp1, center_x=center_x, center_y=cur_y1, opacity=min(1.0, u * 2))
+            frame = alpha_composite_sprite(frame, sp2, center_x=center_x, center_y=cur_y2, opacity=min(1.0, u * 2))
 
         out_u8 = np.clip(frame, 0, 255).astype(np.uint8)
         proc.stdin.write(out_u8.tobytes())
