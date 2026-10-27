@@ -51,39 +51,65 @@ def run_pipeline(config_path: str, output_dir: str = None, delivery_dir: str = N
     wc_gif = f"{out_root}/02_wordcloud_4s.gif"
     render_wordcloud_transition(cfg["photos"]["wordcloud_bg"], cfg["keywords"], wc_mp4, wc_jpg, wc_gif, team_key=team_key)
 
-    # 3. Major Chapter 1 (2.5s)
-    print("\n>>> [3/8] Rendering Major Chapter 1: 基本信息 (2.5s)...")
-    ch1_mp4 = f"{out_root}/03_major_01_basic_info_2.5s.mp4"
-    render_major_chapter_card(cfg["photos"]["major_ch1_bg"], "基本信息", ch1_mp4, font_size=180)
+    # 3. Keyword Chapter Poster Cards (8s) (Placed right after Wordcloud)
+    print("\n>>> [3/8] Rendering 4 Keyword Chapter Poster Cards (8.0s)...")
+    kw_clips = []
+    for k_idx, kw_card in enumerate(cfg.get("keyword_chapters", [])):
+        k_mp4 = f"{out_root}/03_kw_poster_{k_idx+1:02d}.mp4"
+        k_jpg = f"{out_root}/03_kw_poster_{k_idx+1:02d}.jpg"
+        k_gif = f"{out_root}/03_kw_poster_{k_idx+1:02d}.gif"
+        render_single_keyword_card(
+            chapter_idx=k_idx + 1,
+            title_cn=kw_card["title_cn"],
+            title_en=kw_card.get("title_en", ""),
+            body_text=kw_card.get("body_text", ""),
+            photo_path=kw_card["photo"],
+            player_label=f"{cfg.get('name_en_short', player_name)} · #{cfg.get('jersey_number', '0')}",
+            out_mp4=k_mp4,
+            out_jpg=k_jpg,
+            out_gif=k_gif,
+            team_key=team_key,
+        )
+        kw_clips.append(k_mp4)
 
-    # 4. Profile HUD (12s)
-    print("\n>>> [4/8] Rendering Aesthetic Profile HUD (12.0s)...")
-    prof_mp4 = f"{out_root}/04_profile_hud_12s.mp4"
-    prof_jpg1 = f"{out_root}/04_profile_hud_part1.jpg"
-    prof_jpg2 = f"{out_root}/04_profile_hud_part2.jpg"
-    prof_gif = f"{out_root}/04_profile_hud.gif"
-    render_profile_hud(cfg["photos"]["profile_hero1"], cfg["photos"]["profile_hero2"], cfg["profile"], prof_mp4, prof_jpg1, prof_jpg2, prof_gif, team_key=team_key)
+    kw_all_mp4 = f"{out_root}/03_keywords_all_8s.mp4"
+    concat_career_marquee(kw_clips, kw_all_mp4)
 
-    # 5. Major Chapter 2 (2.5s)
-    print("\n>>> [5/8] Rendering Major Chapter 2: 职业生涯经历及成就 (2.5s)...")
-    ch2_mp4 = f"{out_root}/05_major_02_career_2.5s.mp4"
-    render_major_chapter_card(cfg["photos"]["major_ch2_bg"], "职业生涯经历及成就", ch2_mp4, font_size=150)
+    # 4. Major Chapter 1: 基本信息 (2.5s)
+    print("\n>>> [4/8] Rendering Major Chapter 1: 基本信息 (2.5s)...")
+    ch1_mp4 = f"{out_root}/04_major_01_basic_info_2.5s.mp4"
+    ch1_jpg = f"{out_root}/04_major_01_basic_info_2.5s.jpg"
+    render_major_chapter_card(cfg["photos"]["major_ch1_bg"], "基本信息", ch1_mp4, out_jpg=ch1_jpg, font_size=180)
 
-    # 6. Career Eras
-    print("\n>>> [6/8] Rendering Career Era Transitions (Calibrated Timing)...")
+    # 5. Profile HUD (12s)
+    print("\n>>> [5/8] Rendering Aesthetic Profile HUD (12.0s)...")
+    prof_mp4 = f"{out_root}/05_profile_hud_12s.mp4"
+    prof_jpg1 = f"{out_root}/05_profile_hud_part1.jpg"
+    prof_jpg2 = f"{out_root}/05_profile_hud_part2.jpg"
+    prof_gif = f"{out_root}/05_profile_hud.gif"
+    render_profile_hud(cfg["photos"]["profile_hero1"], cfg["photos"]["profile_hero2"], cfg["profile"], prof_mp4, prof_jpg1, prof_jpg2, prof_gif, team_key=team_key, duration=12.0)
+
+    # 6. Major Chapter 2: 职业生涯经历及成就 (2.5s)
+    print("\n>>> [6/8] Rendering Major Chapter 2: 职业生涯经历及成就 (2.5s)...")
+    ch2_mp4 = f"{out_root}/06_major_02_career_2.5s.mp4"
+    ch2_jpg = f"{out_root}/06_major_02_career_2.5s.jpg"
+    render_major_chapter_card(cfg["photos"]["major_ch2_bg"], "职业生涯经历及成就", ch2_mp4, out_jpg=ch2_jpg, font_size=150)
+
+    # 7. Career Eras
+    print("\n>>> [7/8] Rendering Career Era Transitions (Calibrated Timing)...")
     era_clips = []
     for e_idx, era in enumerate(cfg.get("eras", [])):
         era_title = era["title"]
         era_years = era["years"]
         era_honors = [tuple(h) for h in era["honors"]]
-        era_mp4 = f"{out_root}/06_era_{e_idx+1:02d}.mp4"
-        era_jpg = f"{out_root}/06_era_{e_idx+1:02d}.jpg"
-        era_gif = f"{out_root}/06_era_{e_idx+1:02d}.gif"
+        era_mp4 = f"{out_root}/07_era_{e_idx+1:02d}.mp4"
+        era_jpg = f"{out_root}/07_era_{e_idx+1:02d}.jpg"
+        era_gif = f"{out_root}/07_era_{e_idx+1:02d}.gif"
         render_career_era(era["photo"], era_title, era_years, era_honors, era_mp4, era_jpg, era_gif, team_key=team_key, mode="stack")
         era_clips.append(era_mp4)
 
-    # 7. Career 20 Milestone Cards & Marquee (32s)
-    print("\n>>> [7/8] Rendering Career Milestone Cards & Marquee Slideshow...")
+    # 8. Career 20 Milestone Cards & Marquee (32s)
+    print("\n>>> [8/8] Rendering Career Milestone Cards & Marquee Slideshow...")
     card_clips = []
     for c_idx, card in enumerate(cfg.get("career_cards", [])):
         c_mp4 = f"{out_root}/card_{c_idx+1:02d}.mp4"
@@ -96,33 +122,9 @@ def run_pipeline(config_path: str, output_dir: str = None, delivery_dir: str = N
     marquee_gif = f"{out_root}/08_career_marquee_32s.gif"
     concat_career_marquee(card_clips, marquee_mp4, marquee_gif, marquee_jpg)
 
-    # 8. Keyword Chapter Poster Cards (8s)
-    print("\n>>> [8/8] Rendering 4 Keyword Chapter Poster Cards (8.0s)...")
-    kw_clips = []
-    for k_idx, kw_card in enumerate(cfg.get("keyword_chapters", [])):
-        k_mp4 = f"{out_root}/kw_poster_{k_idx+1:02d}.mp4"
-        k_jpg = f"{out_root}/kw_poster_{k_idx+1:02d}.jpg"
-        k_gif = f"{out_root}/kw_poster_{k_idx+1:02d}.gif"
-        render_single_keyword_card(
-            chapter_idx=k_idx + 1,
-            title_cn=kw_card["title_cn"],
-            title_en=kw_card["title_en"],
-            body_text=kw_card["body_text"],
-            photo_path=kw_card["photo"],
-            player_label=f"{cfg.get('name_en_short', player_name)} · #{cfg.get('jersey_number', '0')}",
-            out_mp4=k_mp4,
-            out_jpg=k_jpg,
-            out_gif=k_gif,
-            team_key=team_key,
-        )
-        kw_clips.append(k_mp4)
-
-    kw_all_mp4 = f"{out_root}/09_keywords_all_8s.mp4"
-    concat_career_marquee(kw_clips, kw_all_mp4)
-
     # Concat Full Master Video
     print("\n>>> Assembling Full Master Video...")
-    all_ordered = [intro_mp4, wc_mp4, ch1_mp4, prof_mp4, ch2_mp4] + era_clips + [marquee_mp4, kw_all_mp4]
+    all_ordered = [intro_mp4, wc_mp4, kw_all_mp4, ch1_mp4, prof_mp4, ch2_mp4] + era_clips + [marquee_mp4]
     norm_ts = []
     for p in all_ordered:
         ts_p = p.replace(".mp4", "_norm.ts")

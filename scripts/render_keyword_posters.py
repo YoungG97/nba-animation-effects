@@ -1,24 +1,61 @@
 """Keyword Chapter Posters Renderer (Figure 2 Editorial Poster Aesthetic).
-Generates movie/sports poster cards with chapter badge pill, bold title, English subtitle, and lower-third bio.
+Generates movie/sports poster cards with chapter badge pill, centered bold title, and cinematic photo grading.
+Matches benchmark media_1793033375396_edc63561.png (MotorCade).
 """
 
 import os
 import subprocess
 import cv2
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 
 from .engine import (
     get_font_path,
-    synthesize_slam_sfx,
+    synthesize_camera_shutter_sfx,
     alpha_composite_sprite,
     ease_out_back,
 )
 from .team_colors import get_team_colors
 
-def render_badge_sprite(chapter_idx: int, player_label: str, team_key: str = "OKC") -> Image.Image:
-    font_path = get_font_path(prefer_heavy=False)
-    sub_font = ImageFont.truetype(font_path, 24)
+def apply_cinematic_grading(img: Image.Image, target_w: int = 1920, target_h: int = 1080) -> Image.Image:
+    src_w, src_h = img.size
+    target_ratio = target_w / target_h
+    src_ratio = src_w / src_h
+    if src_ratio > target_ratio:
+        new_w = int(src_h * target_ratio)
+        left = (src_w - new_w) // 2
+        img = img.crop((left, 0, left + new_w, src_h))
+    elif src_ratio < target_ratio:
+        new_h = int(src_w / target_ratio)
+        top = (src_h - new_h) // 3
+        img = img.crop((0, top, src_w, top + new_h))
+
+    img = img.resize((target_w, target_h), Image.Resampling.LANCZOS)
+    img = ImageEnhance.Contrast(img).enhance(1.10)
+    img = ImageEnhance.Sharpness(img).enhance(1.15)
+
+    overlay = Image.new("RGBA", (target_w, target_h), (0, 0, 0, 0))
+    px = overlay.load()
+    for y in range(target_h):
+        ny = y / target_h
+        grad_alpha = int(210 * ((ny - 0.38) / 0.62) ** 1.3) if ny > 0.38 else 0
+        top_alpha = int(95 * ((1.0 - ny / 0.22) ** 2)) if ny < 0.22 else 0
+        for x in range(target_w):
+            nx = x / target_w
+            dx = (nx - 0.50) * 1.15
+            dy = (ny - 0.45) * 1.10
+            dist_sq = dx * dx + dy * dy
+            vig_alpha = min(180, int(150 * (dist_sq ** 1.25)))
+            combined = 255 - int((255 - grad_alpha) * (255 - vig_alpha) * (255 - top_alpha) / (255 * 255))
+            px[x, y] = (0, 0, 0, min(255, combined))
+
+    return Image.alpha_composite(img.convert("RGBA"), overlay)
+
+def draw_chapter_badge(chapter_idx: int, player_label: str, team_key: str = "GSW", top_y: int = 420, center_x: int = 960) -> Image.Image:
+    lay = Image.new("RGBA", (1920, 1080), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(lay)
+    font_bold = get_font_path(prefer_heavy=False)
+    sub_font = ImageFont.truetype(font_bold, 24)
     left_label = f"CHAPTER 0{chapter_idx}"
     right_label = player_label
     tc = get_team_colors(team_key)
@@ -31,17 +68,8 @@ def render_badge_sprite(chapter_idx: int, player_label: str, team_key: str = "OK
     gap = 26
     pill_pad_x = 14
     pill_pad_y = 5
-
-    total_w = int((w_left + pill_pad_x * 2) + gap + w_right)
-    pad = 20
-    sprite_w = total_w + pad * 2
-    sprite_h = 44 + pad * 2
-
-    sprite = Image.new("RGBA", (sprite_w, sprite_h), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(sprite)
-
-    start_x = pad
-    top_y = pad + pill_pad_y
+    total_w = (w_left + pill_pad_x * 2) + gap + w_right
+    start_x = int(center_x - total_w / 2)
 
     pill_rect = [
         start_x,
@@ -62,8 +90,43 @@ def render_badge_sprite(chapter_idx: int, player_label: str, team_key: str = "OK
         draw.text((cx, top_y), c, font=sub_font, fill=(215, 225, 235, 230))
         cx += sub_font.getlength(c) + 4
 
-    return sprite
+    return lay
 
+def render_poster_title_sprite(title: str, font_size: int = 140) -> Image.Image:
+    font_heavy = get_font_path(prefer_heavy=True)
+    font = ImageFont.truetype(font_heavy, font_size)
+    tracking = -5
+    stroke_width = 2
+
+    char_advances = [font.getlength(ch) for ch in title]
+    total_w = int(sum(char_advances) + tracking * max(0, len(title) - 1))
+    pad_x = 60
+    pad_y = 50
+    sw = total_w + pad_x * 2
+    sh = font_size + pad_y * 2
+
+    shadow_wide = Image.new("RGBA", (sw, sh), (0, 0, 0, 0))
+    shadow_tight = Image.new("RGBA", (sw, sh), (0, 0, 0, 0))
+    fg_layer = Image.new("RGBA", (sw, sh), (0, 0, 0, 0))
+
+    draw_sw = ImageDraw.Draw(shadow_wide)
+    draw_st = ImageDraw.Draw(shadow_tight)
+    draw_fg = ImageDraw.Draw(fg_layer)
+
+    cur_x = pad_x
+    y = pad_y - int(font_size * 0.10)
+    for idx, ch in enumerate(title):
+        draw_sw.text((cur_x, y + 8), ch, font=font, fill=(0, 0, 0, 240), stroke_width=stroke_width + 6, stroke_fill=(0, 0, 0, 240))
+        draw_st.text((cur_x + 4, y + 7), ch, font=font, fill=(0, 0, 0, 255), stroke_width=stroke_width + 2, stroke_fill=(0, 0, 0, 255))
+        draw_fg.text((cur_x, y), ch, font=font, fill=(255, 255, 255, 255), stroke_width=stroke_width, stroke_fill=(255, 255, 255, 255))
+        cur_x += char_advances[idx] + tracking
+
+    shadow_wide = shadow_wide.filter(ImageFilter.GaussianBlur(radius=18))
+    shadow_tight = shadow_tight.filter(ImageFilter.GaussianBlur(radius=3.5))
+
+    out = Image.alpha_composite(shadow_wide, shadow_tight)
+    out = Image.alpha_composite(out, fg_layer)
+    return out
 
 def render_single_keyword_card(
     chapter_idx: int,
@@ -75,53 +138,25 @@ def render_single_keyword_card(
     out_mp4: str,
     out_jpg: str = None,
     out_gif: str = None,
-    team_key: str = "OKC",
+    team_key: str = "GSW",
     duration: float = 2.0,
 ):
     W, H = 1920, 1080
     FPS = 60
     TOTAL_FRAMES = int(round(FPS * duration))
-    tc = get_team_colors(team_key)
 
-    font_heavy = get_font_path(prefer_heavy=True)
-    font_bold = get_font_path(prefer_heavy=False)
+    base_graded = apply_cinematic_grading(Image.open(photo_path), W, H)
+    badge_layer = draw_chapter_badge(chapter_idx=chapter_idx, player_label=player_label, team_key=team_key, top_y=420, center_x=W // 2)
+    title_sprite = render_poster_title_sprite(title_cn, font_size=140)
 
-    im_raw = Image.open(photo_path).convert("RGB")
-    scale = max(W / im_raw.width, H / im_raw.height)
-    nw, nh = int(round(im_raw.width * scale)), int(round(im_raw.height * scale))
-    im_scaled = im_raw.resize((nw, nh), Image.Resampling.LANCZOS)
-    crop_x = int(np.clip((nw - W) * 0.5, 0, max(0, nw - W)))
-    crop_y = int(np.clip((nh - H) * 0.25, 0, max(0, nh - H)))
-    base_img = im_scaled.crop((crop_x, crop_y, crop_x + W, crop_y + H))
-    base_np = np.asarray(base_img, dtype=np.float32)
-
-    # Sprites
-    badge_sp = render_badge_sprite(chapter_idx, player_label, team_key=team_key)
-
-    # Title Sprite (Bold Chinese typography)
-    f_title = ImageFont.truetype(font_heavy, 105)
-    f_sub = ImageFont.truetype(font_bold, 28)
-    tw = f_title.getlength(title_cn)
-    sw = int(max(tw, f_sub.getlength(title_en))) + 60
-    sh = 180
-    title_sp = Image.new("RGBA", (sw, sh), (0, 0, 0, 0))
-    dt = ImageDraw.Draw(title_sp)
-    dt.text((31, 33), title_cn, font=f_title, fill=(0, 0, 0, 220), stroke_width=2, stroke_fill=(0, 0, 0, 220))
-    dt.text((30, 30), title_cn, font=f_title, fill=(255, 255, 255, 255))
-    dt.text((31, 141), title_en, font=f_sub, fill=(0, 0, 0, 220), stroke_width=1, stroke_fill=(0, 0, 0, 220))
-    dt.text((30, 140), title_en, font=f_sub, fill=tc["accent"] + (255,))
-
-    # Lower-third description
-    f_body = ImageFont.truetype(font_bold, 30)
-    bw = int(f_body.getlength(body_text)) + 60
-    bh = 70
-    body_sp = Image.new("RGBA", (bw, bh), (0, 0, 0, 0))
-    db = ImageDraw.Draw(body_sp)
-    db.text((31, 22), body_text, font=f_body, fill=(0, 0, 0, 220), stroke_width=1, stroke_fill=(0, 0, 0, 220))
-    db.text((30, 20), body_text, font=f_body, fill=(255, 255, 255, 240))
+    if out_jpg:
+        comp = Image.alpha_composite(base_graded, badge_layer)
+        comp_np = np.asarray(comp.convert("RGB"), dtype=np.float32)
+        comp_np = alpha_composite_sprite(comp_np, title_sprite, center_x=W // 2, center_y=540, opacity=1.0)
+        Image.fromarray(np.clip(comp_np, 0, 255).astype(np.uint8)).save(out_jpg, quality=95)
 
     tmp_wav = out_mp4.replace(".mp4", "_sfx.wav")
-    synthesize_slam_sfx(tmp_wav, duration, hit_t=0.28)
+    synthesize_camera_shutter_sfx(tmp_wav, duration=duration)
 
     ffmpeg_cmd = [
         "ffmpeg", "-y",
@@ -133,40 +168,24 @@ def render_single_keyword_card(
     ]
     proc = subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    y_coords = np.linspace(0.0, 1.0, H, dtype=np.float32)[:, None, None]
-    black_gradient = np.clip((y_coords - 0.40) / 0.60, 0.0, 1.0) ** 1.35 * 0.85
+    comp = Image.alpha_composite(base_graded, badge_layer)
+    base_with_badge_np = np.asarray(comp.convert("RGB"), dtype=np.float32)
 
     for f_idx in range(TOTAL_FRAMES):
         t = f_idx / FPS
-        push_p = t / duration
-        zoom = 1.0 + 0.035 * push_p
-        cx, cy = W * 0.50, H * 0.45
+        push = 1.00 + 0.03 * (t / duration)
         M = np.float32([
-            [zoom, 0, cx * (1.0 - zoom)],
-            [0, zoom, cy * (1.0 - zoom)],
+            [push, 0, (W * 0.5) * (1.0 - push)],
+            [0, push, (H * 0.5) * (1.0 - push)],
         ])
-        frame = cv2.warpAffine(base_np, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT_101)
-        frame = frame * (1.0 - black_gradient)
+        frame = cv2.warpAffine(base_with_badge_np, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT_101)
 
-        # Entrance animations
-        u_b = min(1.0, t / 0.25)
-        p_b = ease_out_back(u_b, overshoot=1.1)
-        frame = alpha_composite_sprite(frame, badge_sp, center_x=int(140 + badge_sp.width // 2), center_y=int(H * 0.52 * p_b), opacity=min(1.0, u_b * 2))
-
-        if t >= 0.10:
-            u_t = min(1.0, (t - 0.10) / 0.28)
-            p_t = ease_out_back(u_t, overshoot=1.15)
-            frame = alpha_composite_sprite(frame, title_sp, center_x=int(140 + title_sp.width // 2), center_y=int(H * 0.65 * p_t), opacity=min(1.0, u_t * 2))
-
-        if t >= 0.22:
-            u_d = min(1.0, (t - 0.22) / 0.30)
-            p_d = ease_out_back(u_d, overshoot=1.1)
-            frame = alpha_composite_sprite(frame, body_sp, center_x=int(140 + body_sp.width // 2), center_y=int(H * 0.80 * p_d), opacity=min(1.0, u_d * 2))
+        u = min(1.0, t / 0.30)
+        p = ease_out_back(u, overshoot=1.20)
+        cur_y = int(540 * (0.94 + 0.06 * p))
+        frame = alpha_composite_sprite(frame, title_sprite, center_x=W // 2, center_y=cur_y, opacity=min(1.0, u * 2))
 
         out_u8 = np.clip(frame, 0, 255).astype(np.uint8)
-        if out_jpg and f_idx == int(0.9 * FPS):
-            Image.fromarray(out_u8).save(out_jpg, quality=95)
-
         proc.stdin.write(out_u8.tobytes())
 
     proc.stdin.close()
