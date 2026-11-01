@@ -53,6 +53,10 @@ This skill empowers Antigravity to transform any NBA player's textual biography,
    - Complete Sentences (句号/冒号): Strictly **0.15s ～ 0.20s**.
    - Internal dead-air excision via Whisper word timestamps + RMS VAD.
 
+9. **Single Delivery Package & Tuning Mode Policy (单一交付包与调试模式原则)**:
+   - **严禁重复多包交付**：任何成片导出严格只输出到**单一交付目录**（统一使用 `~/Downloads/{team}_{player}`），严禁再生成第二份冗余素材包。
+   - **调试/调整期间不自动生成**：在用户调整提示词、排版布局、字体或选图等调试对齐阶段，严禁自动调用完整视频生成并写入交付包；仅在 scratch 或 artifact 中生成轻量预览帧（JPG/GIF）供用户确认，只有在用户明确确认并指示“生成/导出”时，才进行单包最终交付输出。
+
 ---
 
 ## 🚦 Full Production Pipelines
