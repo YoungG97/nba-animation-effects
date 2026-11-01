@@ -53,9 +53,10 @@ This skill empowers Antigravity to transform any NBA player's textual biography,
    - Complete Sentences (句号/冒号): Strictly **0.15s ～ 0.20s**.
    - Internal dead-air excision via Whisper word timestamps + RMS VAD.
 
-9. **Single Delivery Package & Tuning Mode Policy (单一交付包与调试模式原则)**:
-   - **严禁重复多包交付**：任何成片导出严格只输出到**单一交付目录**（统一使用 `~/Downloads/{team}_{player}`），严禁再生成第二份冗余素材包。
-   - **调试/调整期间不自动生成**：在用户调整提示词、排版布局、字体或选图等调试对齐阶段，严禁自动调用完整视频生成并写入交付包；仅在 scratch 或 artifact 中生成轻量预览帧（JPG/GIF）供用户确认，只有在用户明确确认并指示“生成/导出”时，才进行单包最终交付输出。
+9. **Single Delivery Package & Direct NLE Timeline Order (单一交付包与直接拖轨交付规范)**:
+   - **统一目录命名（选项B）**：严格仅生成单一目录 `~/Downloads/{player_name}_剪辑成品素材包/`，禁止多包生成或重复拷贝。
+   - **直接拖入剪辑器单轨交付**：无需拼接全片母带（不生成 `00_【全片合体】...`），交付包内直接平铺按时间线顺序规范命名的独立单轨片段（`01_开头人物入场_10秒.mp4`, `02_核心词云过渡_4秒.mp4`, `03_关键词小章节全套合体连播_8秒.mp4`, `04_大章节过渡一_基本信息_2.5秒.mp4`, `05_详细基本信息杂志排版_12秒.mp4`, `06_大章节过渡二_职业生涯经历及成就_2.5秒.mp4`, `07_职业生涯时期_...mp4`, `08_职业生涯全套连续跑马灯_32秒.mp4`）。用户在剪辑软件中可全选一次性拖入轨道。
+   - **调试阶段原则（Tuning Mode）**：在用户调整提示词、排版布局、字体或选图等调试对齐阶段，严禁自动调用完整视频生成并写入交付包；仅在对话中提供轻量单帧预览（JPG/GIF）供用户确认，只有在用户明确确认并指示“生成/导出”时，才进行单包交付。
 
 ---
 
