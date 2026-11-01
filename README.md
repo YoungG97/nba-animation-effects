@@ -44,7 +44,7 @@ Transform raw player bios, statistics, milestones, voiceover audio, and photo as
 
 ## 🚦 Production Pipelines
 
-### Pipeline 1: Full 9-Module NLE Video Package
+### Pipeline 1: Direct NLE Timeline Order Delivery (单一素材包 & 免拼接直接拖轨)
 
 ```mermaid
 flowchart LR
@@ -55,8 +55,13 @@ flowchart LR
     HUD --> Ch2["06: Major Ch2 2.5s"]
     Ch2 --> Eras["07: Career Eras"]
     Eras --> Marquee["08: Marquee 32s"]
-    Marquee --> Master["00: Full Master 1080P60"]
+    Marquee --> Folder["Direct Delivery: ~/Downloads/{player_name}_剪辑成品素材包/"]
 ```
+
+> **单一交付与免拼接规范**：
+> - 统一单一交付包路径：`~/Downloads/{player_name}_剪辑成品素材包/`。
+> - 无需漫长拼接合成全片母带，内部直接平铺带序号的单轨片段（`01_...`, `02_...`, `03_...`），在剪映 / PR / FCPX 中全选直接拖入时间线即可无缝开始剪辑。
+> - 调试对齐期间不生成大文件，仅通过轻量单帧快速对齐确认。
 
 ### Pipeline 2: 12-Track JianYing Pro Draft Project
 

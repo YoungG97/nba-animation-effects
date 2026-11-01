@@ -17,7 +17,7 @@ from .render_career_marquee import render_single_career_card, concat_career_marq
 from .render_keyword_posters import render_single_keyword_card
 from .team_colors import get_team_colors
 
-def run_pipeline(config_path: str, output_dir: str = None, delivery_dir: str = None):
+def run_pipeline(config_path: str, output_dir: str = None, delivery_dir: str = None, concat_master: bool = False):
     with open(config_path, "r", encoding="utf-8") as f:
         cfg = json.load(f)
 
@@ -26,6 +26,7 @@ def run_pipeline(config_path: str, output_dir: str = None, delivery_dir: str = N
     tc = get_team_colors(team_key)
 
     out_root = output_dir or os.path.join(os.getcwd(), f"output_{team_key}_{player_name}")
+    # Single Delivery Package: Option B (player_name_剪辑成品素材包)
     deliv_root = delivery_dir or os.path.expanduser(f"~/Downloads/{player_name}_剪辑成品素材包")
 
     os.makedirs(out_root, exist_ok=True)
@@ -134,51 +135,60 @@ def run_pipeline(config_path: str, output_dir: str = None, delivery_dir: str = N
             "-c:a", "aac", "-ar", "44100", "-ac", "2", "-b:a", "192k",
             ts_p,
         ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        norm_ts.append(ts_p)
+    # Optional master concatenation (defaults to False as user prefers direct timeline clips)
+    if concat_master:
+        norm_ts = []
+        for idx, p in enumerate(all_ordered_clips):
+            ts_p = f"{out_root}/norm_{idx:02d}.ts"
+            subprocess.run([
+                "ffmpeg", "-y", "-i", p,
+                "-c", "copy", "-bsf:v", "h264_mp4toannexb", "-f", "mpegts",
+                ts_p,
+            ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            norm_ts.append(ts_p)
 
-    txt_concat = f"{out_root}/master_concat.txt"
-    with open(txt_concat, "w") as f:
+        txt_concat = f"{out_root}/master_concat.txt"
+        with open(txt_concat, "w") as f:
+            for p in norm_ts:
+                f.write(f"file '{p}'\n")
+
+        master_mp4 = f"{out_root}/00_master_full.mp4"
+        master_jpg = f"{out_root}/00_master_full.jpg"
+        subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", txt_concat, "-c", "copy", master_mp4], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["ffmpeg", "-y", "-ss", "00:00:05.5", "-i", master_mp4, "-vframes", "1", "-q:v", "2", master_jpg], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        os.remove(txt_concat)
         for p in norm_ts:
-            f.write(f"file '{p}'\n")
+            if os.path.exists(p): os.remove(p)
 
-    master_mp4 = f"{out_root}/00_master_full.mp4"
-    master_jpg = f"{out_root}/00_master_full.jpg"
-    subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", txt_concat, "-c", "copy", master_mp4], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    subprocess.run(["ffmpeg", "-y", "-ss", "00:00:05.5", "-i", master_mp4, "-vframes", "1", "-q:v", "2", master_jpg], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    os.remove(txt_concat)
-    for p in norm_ts:
-        if os.path.exists(p): os.remove(p)
+        d_master = os.path.join(deliv_root, "00_【参考母片】全片无缝合体完整视频")
+        os.makedirs(d_master, exist_ok=True)
+        shutil.copy2(master_mp4, os.path.join(d_master, f"01_【全片合体】{player_name}_完整全片_1080P60.mp4"))
+        shutil.copy2(master_jpg, os.path.join(d_master, f"01_【全片合体】{player_name}_封面预览图.jpg"))
 
-    # Package to delivery directories
+    # Direct timeline copy (按时间线顺序单轨片段，支持直接全选拖入剪辑器)
     d_timeline = os.path.join(deliv_root, "10_【直接拖入剪辑器】按时间线顺序单轨片段")
-    d_master = os.path.join(deliv_root, "00_【参考母片】全片无缝合体完整视频")
     os.makedirs(d_timeline, exist_ok=True)
-    os.makedirs(d_master, exist_ok=True)
 
-    shutil.copy2(master_mp4, os.path.join(d_master, f"01_【全片合体】{player_name}_完整全片_1080P60.mp4"))
-    shutil.copy2(master_jpg, os.path.join(d_master, f"01_【全片合体】{player_name}_封面预览图.jpg"))
-
-    # Direct timeline copy
     timeline_copies = [
         (intro_mp4, "01_开头人物入场_每天认识一位NBA球员_10秒.mp4"),
         (wc_mp4, "02_核心词云过渡_4秒.mp4"),
-        (ch1_mp4, "03_大章节过渡一_基本信息_2.5秒.mp4"),
-        (prof_mp4, "04_详细基本信息杂志排版_12秒.mp4"),
-        (ch2_mp4, "05_大章节过渡二_职业生涯经历及成就_2.5秒.mp4"),
+        (kw_all_mp4, "03_关键词小章节全套合体连播_8秒.mp4"),
+        (ch1_mp4, "04_大章节过渡一_基本信息_2.5秒.mp4"),
+        (prof_mp4, "05_详细基本信息杂志排版_12秒.mp4"),
+        (ch2_mp4, "06_大章节过渡二_职业生涯经历及成就_2.5秒.mp4"),
     ]
     for idx, e_p in enumerate(era_clips):
-        timeline_copies.append((e_p, f"06_职业生涯时期_{idx+1:02d}.mp4"))
+        timeline_copies.append((e_p, f"07_职业生涯时期_{idx+1:02d}.mp4"))
     timeline_copies.append((marquee_mp4, "08_职业生涯全套连续跑马灯_32秒.mp4"))
-    timeline_copies.append((kw_all_mp4, "09_关键词小章节全套合体连播_8秒.mp4"))
 
     for src_p, dst_fn in timeline_copies:
         if os.path.exists(src_p):
             shutil.copy2(src_p, os.path.join(d_timeline, dst_fn))
 
     print("\n" + "=" * 70)
-    print("ALL MODULES SUCCESSFULLY GENERATED & PACKAGED!")
-    print(f"Master Video: {os.path.join(d_master, f'01_【全片合体】{player_name}_完整全片_1080P60.mp4')}")
-    print(f"Timeline Folder: {d_timeline}")
+    print("ALL MODULES SUCCESSFULLY GENERATED & DELIVERED!")
+    print(f"Delivery Packaging: {deliv_root}")
+    print(f"Direct NLE Timeline Clips: {d_timeline}")
     print("=" * 70)
 
 def main():
